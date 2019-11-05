@@ -35,7 +35,7 @@ def request(n=5):
 
     # parse arguments
     try:
-        arg = sys.argv[1]
+        arg = ' '.join(sys.argv[1:])
     except:
         print("Error parsing command-line arguments. (Missing search term?)")
         return -1
