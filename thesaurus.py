@@ -71,7 +71,7 @@ def request(n=5):
     options = set()
     for idx, definition in enumerate(tabs):
         options.add(idx + 1)
-        print(idx + 1, "-", definition["definition"])
+        print(idx + 1, "-", "(" + definition["pos"] + ")", definition["definition"])
 
     # process input for desired definition (if possible)
     num_definitions = len(options)
