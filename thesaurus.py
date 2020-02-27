@@ -17,25 +17,22 @@ def request(n=5):
 
     # global imports
     from bs4 import BeautifulSoup
-    import functools
     import json
-    import operator
     import re
     import sys
     import urllib.request
 
     # regex for each webpage and elements to search for within the webpage
-    regex = {"thesaurus": "window.INITIAL_STATE = ({.*});"}
+    regex = {"thesaurus": '.*("posTabs".*),"synonyms":\[]'}
     synonyms = {"todo"}
     thesaurus = {
         "name": "script",
         "string": re.compile(regex["thesaurus"]),
-        "filter": ["searchData", "tunaApiData", "posTabs"],
     }
 
     # parse arguments
     try:
-        arg = ' '.join(sys.argv[1:])
+        arg = " ".join(sys.argv[1:])
     except:
         print("Error parsing command-line arguments. (Missing search term?)")
         return -1
@@ -60,14 +57,16 @@ def request(n=5):
     # parse out the element of interest and convert to JSON
     try:
         subpage = soup.find(thesaurus["name"], string=thesaurus["string"]).text
-        element = json.loads(re.match(regex["thesaurus"], subpage).groups()[0])
+        element = json.loads(
+            "{" + re.match(regex["thesaurus"], subpage).groups()[0] + "}"
+        )
     except:
         print("Error parsing JSON from webpage.")
         return -1
 
     # parse and display definitions
     print("Definitions for", arg)
-    tabs = functools.reduce(operator.getitem, thesaurus["filter"], element)
+    tabs = [*element.values()][0]
     options = set()
     for idx, definition in enumerate(tabs):
         options.add(idx + 1)
@@ -100,10 +99,11 @@ def request(n=5):
     i = 0
     while True:
         try:
-            # show all terms with similarty scores (and then some if i < n)
             synonym = tabs[desired]["synonyms"][i]
             print(str(i + 1).rjust(2), "-", synonym["term"])
             i += 1
+
+            # show all terms with similarty scores (and then some if i < n)
             if synonym["similarity"] != "100" and i >= n:
                 break
         except:
