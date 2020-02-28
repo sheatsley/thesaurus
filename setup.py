@@ -26,7 +26,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords="cli command-line terminal thesaurus",
-    name="thesaurus",
+    name="cli-thesaurus",
     packages=find_packages(),
     python_requires=">=3",
     url="https://github.com/sheatsley/thesaurus",
