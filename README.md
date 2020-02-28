@@ -13,7 +13,7 @@ of your ~~wordy~~ _pleonastic_ needs. It supports compound words (for example,
 Thesaurus requires python 3 and can be installed either through
 [pip3](https://pip.pypa.io/en/stable/) or [Homebrew](https://brew.sh):
 
-`$ pip3 install cli-thesaurus` or `$ brew install cli-thesaurus`
+`$ pip3 install cli-thesaurus` or `$ brew tap sheatsley/homebrew-sheatsley && brew install cli-thesaurus`
 
 --- 
 This tool was inspired by other ~~discontinued~~ _antediluvian_
