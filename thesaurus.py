@@ -20,26 +20,30 @@ class Thesaurus:
 
     def __init__(
         self,
+        local=None,
+        max_spell=5,
+        min_syns=5,
         spell_api="https://api-portal.dictionary.com/spellSuggestions/",
         thesaurus_api="https://tuna.thesaurus.com/pageData/",
-        local=".",
-        min_syns=5,
+        word=None,
     ):
         """
         Nearly all class methods rely on the following paramaters:
-        word - the word to search for
+        local - TODO
+        max_spell - maximum number of spelling suggestions to show
+        min_syns - desired minimum number of synonyms to show
         spell_api - backend api for spell checking
         thesaurus_api - backend api for synonyms
-        local - path to SQLite local storage
-        min_syns - desired minimum number of synonyms to show
+        word - the word to search for
         """
 
         # setup args, local storage, and remote apis
         self.local = local
+        self.max_spell = max_spell
         self.min_syns = min_syns
         self.spell_api = spell_api
         self.thesaurus_api = thesaurus_api
-        self.word = None
+        self.word = word
 
     def interactive(self, options, prompt="definition"):
         """
@@ -73,8 +77,12 @@ class Thesaurus:
         """
 
         # parse definitions
-        print("Definitions for", word)
-        definitions = functools.reduce(operator.getitem, keys, response)
+        try:
+            definitions = functools.reduce(operator.getitem, keys, response)
+            print("Definitions for", word)
+        except TypeError as e:
+            print("No results found for", word)
+            return -1
         options = set()
         for idx, definition in enumerate(definitions):
             options.add(idx + 1)
@@ -107,10 +115,12 @@ class Thesaurus:
                 self.word,
             )
 
-    def spellcheck(self, word, spell_api, keys=["data", "luna"]):
+    def spellcheck(self, word, spell_api, max_spell, keys=["data", "luna"]):
         """
         Performs spell check request (and some trivial parsing)
         word - word to spellcheck
+        spell_api - api to for spellchecking
+        max_spell - maximum number of spelling suggestions
         keys - list of nested keys in the response
         """
 
@@ -123,7 +133,7 @@ class Thesaurus:
         if len(spelling):
             print('"' + word + '"', "is invalid - did you mean any of the following?")
             options = set()
-            for idx, option in enumerate(spelling):
+            for idx, option in enumerate(spelling[:max_spell]):
                 options.add(idx + 1)
                 print(str(idx + 1).rjust(2), "-", option)
 
@@ -159,7 +169,7 @@ class Thesaurus:
         except:
             print("Error parsing command-line arguments. (Missing search term?)")
             return -1
-        return self.spellcheck(self.word, self.spell_api)
+        return self.spellcheck(self.word, self.spell_api, self.max_spell)
 
 
 if __name__ == "__main__":
