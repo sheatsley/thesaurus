@@ -30,5 +30,5 @@ setup(
     packages=find_packages(),
     python_requires=">=3",
     url="https://github.com/sheatsley/thesaurus",
-    version="1.0.0b1",
+    version="1.0.0b2",
 )
