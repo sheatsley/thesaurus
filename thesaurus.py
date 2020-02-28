@@ -172,11 +172,14 @@ class Thesaurus:
         return self.spellcheck(self.word, self.spell_api, self.max_spell)
 
 
-if __name__ == "__main__":
+def main():
     """
     To interact with the Thesaurus object, just pass in the desired word from
     the command line. The main interface is through query().
     """
-
     th = Thesaurus()
     raise SystemExit(th.query(sys.argv))
+
+
+if __name__ == "__main__":
+    main()
