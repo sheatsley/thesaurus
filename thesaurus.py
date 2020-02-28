@@ -41,14 +41,15 @@ class Thesaurus:
         self.thesaurus_api = thesaurus_api
         self.word = None
 
-    def definition(self, options):
+    def interactive(self, options, prompt="definition"):
         """
-        Takes input to select desired definition
+        Takes input to select desired option 
         options - set of valid inputs
+        prompt - informs the user what the interaction is about
         """
 
         # prompt for desired definition
-        print("Select a definition [1-" + str(len(options)) + "]:")
+        print("Select a", prompt, "[1-" + str(len(options)) + "]:")
         while True:
             selection = input()
             try:
@@ -56,13 +57,12 @@ class Thesaurus:
                 if selection not in options:
                     raise LookupError
                 return selection - 1
-            except LookupError as e:
+            except (LookupError, ValueError) as e:
                 print(
                     "Invalid selection:",
                     selection,
                     "Must be between (1-" + str(len(options)) + ").",
                 )
-        return
 
     def parse(self, response, word, keys=["data", "definitionData", "definitions"]):
         """
@@ -83,7 +83,7 @@ class Thesaurus:
         # select definition
         return (
             self.synonyms(
-                definitions[self.definition(options)], self.word, self.min_syns
+                definitions[self.interactive(options)], self.word, self.min_syns
             )
             if len(definitions) > 1
             else self.synonyms(definitions[0], self.word, self.min_syns)
@@ -121,29 +121,16 @@ class Thesaurus:
             requests.get(url=spell_api + word.replace(" ", "%20")).json(),
         )
         if len(spelling):
-            print("Invalid word:", word, "Did you mean any of the following?")
+            print('"' + word + '"', "is invalid - did you mean any of the following?")
             options = set()
             for idx, option in enumerate(spelling):
                 options.add(idx + 1)
                 print(str(idx + 1).rjust(2), "-", option)
 
-            # prompt for desired correction
-            while True:
-                selection = input()
-                try:
-                    selection = int(selection)
-                    if selection not in options:
-                        raise LookupError
-
-                    # some suggestions can actually be invalid?
-                    self.word = spelling[selection - 1].replace("'", "")
-                    break
-                except LookupError as e:
-                    print(
-                        "Invalid selection:",
-                        selection,
-                        "Must be between (1-" + str(len(options)) + ").",
-                    )
+            # some suggestions can be invalid...
+            self.word = spelling[self.interactive(options, prompt="word")].replace(
+                "'", ""
+            )
         return self.request(self.word, self.thesaurus_api)
 
     def synonyms(self, definition, word, min_syns):
@@ -168,6 +155,7 @@ class Thesaurus:
         """
         try:
             self.word = " ".join(word[1:])
+            assert self.word
         except:
             print("Error parsing command-line arguments. (Missing search term?)")
             return -1
