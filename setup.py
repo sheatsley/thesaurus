@@ -6,6 +6,9 @@ Date: Thu Feb 27 2020
 
 from setuptools import find_packages, setup
 
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 setup(
     author="Ryan Sheatsley",
     author_email="ryan@sheatsley.me",
@@ -21,7 +24,7 @@ setup(
     install_requires=["requests"],
     license="MIT",
     long_description=long_description,
-    long_description_content="text/markdown",
+    long_description_content_type="text/markdown",
     keywords="cli command-line terminal thesaurus",
     name="thesaurus",
     packages=find_packages(),
