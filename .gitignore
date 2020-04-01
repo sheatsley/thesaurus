@@ -1,6 +1,0 @@
-.DS_Store
-__pycache__
-*.swp
-dist/
-build/
-*.egg-info/
